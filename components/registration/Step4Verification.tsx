@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { supabase } from '@/lib/supabase'
 import { useProviderStore } from '@/lib/store'
@@ -11,16 +11,22 @@ export default function Step4Verification() {
   const [error, setError] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({})
   const [isComplete, setIsComplete] = useState(false)
+  const [existingDocuments, setExistingDocuments] = useState<{
+    duiFront?: string
+    duiBack?: string
+    policeRecord?: string
+  }>({})
   
   const { user, documents, setDocuments, setLoading, setError: setStoreError, prevStep } = useProviderStore()
   
-  const duiFrontRef = useRef<HTMLInputElement>(null)
-  const duiBackRef = useRef<HTMLInputElement>(null)
-  const policeRecordRef = useRef<HTMLInputElement>(null)
+  // Debug existing documents
+  console.log('Current existing documents state:', existingDocuments)
+  
 
   useEffect(() => {
     // Load existing document data if available
     const loadExistingData = async () => {
+      console.log('Loading existing data for user:', user?.id)
       if (!user?.id) return
 
       try {
@@ -28,12 +34,24 @@ export default function Step4Verification() {
           .from('provider_documents')
           .select('*')
           .eq('provider_id', user.id)
-          .single()
+          .order('created_at', { ascending: false })
 
-        if (data && !error) {
-          // Note: We can't load actual File objects from URLs, 
-          // but we can show that documents were previously uploaded
-          console.log('Existing documents found:', data)
+        console.log('Database query result:', { data, error })
+        
+        if (data && data.length > 0 && !error) {
+          const latestDocument = data[0]
+          console.log('Setting existing documents:', {
+            duiFront: latestDocument.dui_front_url,
+            duiBack: latestDocument.dui_back_url,
+            policeRecord: latestDocument.police_record_url
+          })
+          setExistingDocuments({
+            duiFront: latestDocument.dui_front_url,
+            duiBack: latestDocument.dui_back_url,
+            policeRecord: latestDocument.police_record_url
+          })
+        } else {
+          console.log('No existing documents found or error:', error)
         }
       } catch (err) {
         console.error('Error loading existing document data:', err)
@@ -97,8 +115,11 @@ export default function Step4Verification() {
   const handleSubmit = async () => {
     if (!user?.id) return
 
-    // Validate required files
-    if (!documents.duiFront || !documents.duiBack || !documents.policeRecord) {
+    // Check if we have either new files or existing documents
+    const hasNewFiles = documents.duiFront || documents.duiBack || documents.policeRecord
+    const hasExistingFiles = existingDocuments.duiFront || existingDocuments.duiBack || existingDocuments.policeRecord
+    
+    if (!hasNewFiles && !hasExistingFiles) {
       setError('Por favor, sube todos los documentos requeridos.')
       return
     }
@@ -108,13 +129,20 @@ export default function Step4Verification() {
     setStoreError(null)
 
     try {
-      const uploads = await Promise.all([
-        handleFileUpload('duiFront', documents.duiFront!),
-        handleFileUpload('duiBack', documents.duiBack!),
-        handleFileUpload('policeRecord', documents.policeRecord!)
-      ])
+      let duiFrontUrl = existingDocuments.duiFront
+      let duiBackUrl = existingDocuments.duiBack
+      let policeRecordUrl = existingDocuments.policeRecord
 
-      const [duiFrontUrl, duiBackUrl, policeRecordUrl] = uploads
+      // Upload new files if they exist
+      if (documents.duiFront) {
+        duiFrontUrl = await handleFileUpload('duiFront', documents.duiFront)
+      }
+      if (documents.duiBack) {
+        duiBackUrl = await handleFileUpload('duiBack', documents.duiBack)
+      }
+      if (documents.policeRecord) {
+        policeRecordUrl = await handleFileUpload('policeRecord', documents.policeRecord)
+      }
 
       // Save document URLs to database
       const { error } = await supabase
@@ -162,17 +190,17 @@ export default function Step4Verification() {
     type, 
     label, 
     description, 
-    accept, 
-    ref 
+    accept
   }: { 
     type: keyof typeof documents
     label: string
     description: string
     accept: string
-    ref: React.RefObject<HTMLInputElement>
   }) => {
     const file = documents[type]
     const progress = uploadProgress[type] || 0
+    const inputRef = useRef<HTMLInputElement>(null)
+    const existingUrl = existingDocuments[type as keyof typeof existingDocuments]
 
     return (
       <div className="space-y-2">
@@ -213,9 +241,38 @@ export default function Step4Verification() {
               </div>
             )}
           </div>
+        ) : existingUrl ? (
+          <div className="border border-green-200 rounded-xl p-4 bg-green-50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <div>
+                  <p className="text-sm font-medium text-green-900">Documento ya subido</p>
+                  <p className="text-xs text-green-700">Archivo previamente cargado</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => inputRef.current?.click()}
+                  className="px-3 py-1 text-xs bg-green-100 text-green-700 hover:bg-green-200 rounded-lg transition-colors"
+                >
+                  Reemplazar
+                </button>
+                <a
+                  href={existingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-1 hover:bg-green-200 rounded-full transition-colors"
+                >
+                  <Eye className="w-4 h-4 text-green-600" />
+                </a>
+              </div>
+            </div>
+          </div>
         ) : (
           <div
-            onClick={() => ref.current?.click()}
+            onClick={() => inputRef.current?.click()}
             className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-[#FF1B1C] hover:bg-[#FF1B1C]/5 cursor-pointer transition-all duration-200"
           >
             <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
@@ -225,7 +282,7 @@ export default function Step4Verification() {
         )}
         
         <input
-          ref={ref}
+          ref={inputRef}
           type="file"
           accept={accept}
           onChange={(e) => {
@@ -308,7 +365,6 @@ export default function Step4Verification() {
           label="Foto del DUI (Frente)"
           description="Sube una foto clara del frente de tu DUI"
           accept="image/*"
-          ref={duiFrontRef}
         />
 
         <FileUploadField
@@ -316,7 +372,6 @@ export default function Step4Verification() {
           label="Foto del DUI (Reverso)"
           description="Sube una foto clara del reverso de tu DUI"
           accept="image/*"
-          ref={duiBackRef}
         />
 
         <FileUploadField
@@ -324,7 +379,6 @@ export default function Step4Verification() {
           label="Antecedentes Penales"
           description="Sube tu certificado de antecedentes penales (PDF o imagen)"
           accept=".pdf,image/*"
-          ref={policeRecordRef}
         />
       </div>
 
@@ -352,7 +406,7 @@ export default function Step4Verification() {
         
         <Button
           onClick={handleSubmit}
-          disabled={isLoading || !documents.duiFront || !documents.duiBack || !documents.policeRecord}
+          disabled={isLoading || (!documents.duiFront && !existingDocuments.duiFront) || (!documents.duiBack && !existingDocuments.duiBack) || (!documents.policeRecord && !existingDocuments.policeRecord)}
           className="flex-1 bg-gradient-to-r from-[#FF1B1C] via-[#FF4444] to-[#FF6B6B] hover:from-[#FF1B1C]/90 hover:via-[#FF4444]/90 hover:to-[#FF6B6B]/90 text-white py-3 text-lg font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:transform-none disabled:scale-100 flex items-center justify-center gap-2"
         >
           {isLoading ? (

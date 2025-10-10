@@ -9,7 +9,8 @@ import { Loader2, Shield, CheckCircle, AlertCircle } from 'lucide-react'
 export default function Step1Authentication() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const { user, setUser, setLoading, setError: setStoreError, nextStep } = useProviderStore()
+  const [registrationStep, setRegistrationStep] = useState<number | null>(null)
+  const { user, setUser, setLoading, setError: setStoreError, nextStep, setCurrentStep } = useProviderStore()
 
   useEffect(() => {
     // Check if user is already authenticated
@@ -21,6 +22,21 @@ export default function Step1Authentication() {
           email: session.user.email || null,
           name: session.user.user_metadata?.full_name || session.user.email || null
         })
+
+        // Fetch registration step
+        try {
+          const { data: providerData, error } = await supabase
+            .from('providers')
+            .select('registration_step')
+            .eq('id', session.user.id)
+            .single()
+
+          if (providerData && !error) {
+            setRegistrationStep(providerData.registration_step)
+          }
+        } catch (err) {
+          console.error('Error fetching registration step:', err)
+        }
       }
     }
     
@@ -57,6 +73,18 @@ export default function Step1Authentication() {
     try {
       await supabase.auth.signOut()
       setUser(null)
+      
+      // Reset currentStep to 1 in both store and localStorage
+      setCurrentStep(1)
+      
+      // Also update localStorage directly to ensure persistence
+      const currentStore = JSON.parse(localStorage.getItem('provider-registration') || '{}')
+      localStorage.setItem('provider-registration', JSON.stringify({
+        ...currentStore,
+        currentStep: 1
+      }))
+      
+      console.log('Reset currentStep to 1 in store and localStorage')
     } catch (err) {
       console.error('Error signing out:', err)
     } finally {
@@ -93,6 +121,52 @@ export default function Step1Authentication() {
   }
 
   if (user) {
+    // Show completion message for users who have finished registration
+    if (registrationStep === 5) {
+      return (
+        <div className="space-y-6">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              ¡Registro completado!
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Tu registro ha sido enviado con éxito. Nuestro equipo revisará tu información y te contactará por WhatsApp o correo electrónico.
+            </p>
+            
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6">
+              <p className="text-sm text-gray-600 mb-2">Cuenta registrada:</p>
+              <p className="text-sm font-medium text-gray-900">{user.email}</p>
+            </div>
+          </div>
+
+          <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <Shield className="w-5 h-5 text-green-600" />
+              <p className="text-sm font-medium text-green-800">Próximos pasos</p>
+            </div>
+            <ul className="text-sm text-green-700 space-y-1">
+              <li>• Revisaremos tu información en 24-48 horas</li>
+              <li>• Te contactaremos por WhatsApp para verificación</li>
+              <li>• Una vez aprobado, podrás recibir solicitudes de servicios</li>
+            </ul>
+          </div>
+
+          <Button
+            onClick={handleSignOut}
+            disabled={isLoading}
+            variant="outline"
+            className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 py-3 text-lg font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:transform-none disabled:scale-100"
+          >
+            Usar una cuenta diferente
+          </Button>
+        </div>
+      )
+    }
+
+    // Show normal registration flow for users who haven't completed
     return (
       <div className="space-y-6">
         <div className="text-center">

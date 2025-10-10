@@ -23,37 +23,69 @@ export default function ProviderRegistrationPage() {
   const { currentStep, user, setCurrentStep, setUser } = useProviderStore()
 
   useEffect(() => {
-    const checkAuthAndProgress = async () => {
+    const initializeAuthAndStep = async () => {
       try {
-        // Check if user is authenticated
+        // First, check if user is authenticated
         const { data: { session } } = await supabase.auth.getSession()
         
-        if (session?.user) {
-          setUser({
-            id: session.user.id,
-            email: session.user.email || null,
-            name: session.user.user_metadata?.full_name || session.user.email || null
-          })
+        if (!session?.user) {
+          // No user logged in - set currentStep to 1
+          console.log('No user logged in, setting currentStep to 1')
+          setCurrentStep(1)
+          // Also update localStorage
+          const currentStore = JSON.parse(localStorage.getItem('provider-registration') || '{}')
+          localStorage.setItem('provider-registration', JSON.stringify({
+            ...currentStore,
+            currentStep: 1
+          }))
+          return
+        }
 
-          // Check registration progress
-          const { data: provider, error } = await supabase
-            .from('providers')
-            .select('registration_step')
-            .eq('id', session.user.id)
-            .single()
+        // User is logged in - set user info
+        setUser({
+          id: session.user.id,
+          email: session.user.email || null,
+          name: session.user.user_metadata?.full_name || session.user.email || null
+        })
 
-          if (provider && !error) {
-            setCurrentStep(provider.registration_step || 1)
-          }
+        // Check if user has a provider record
+        const { data: provider, error } = await supabase
+          .from('providers')
+          .select('registration_step')
+          .eq('id', session.user.id)
+          .single()
+
+        if (provider && !error) {
+          // User has provider record - use their registration_step
+          console.log('User has provider record, registration_step:', provider.registration_step)
+          setCurrentStep(provider.registration_step)
+          // Also update localStorage
+          const currentStore = JSON.parse(localStorage.getItem('provider-registration') || '{}')
+          localStorage.setItem('provider-registration', JSON.stringify({
+            ...currentStore,
+            currentStep: provider.registration_step
+          }))
+        } else {
+          // No provider record - new user, default to step 2
+          console.log('No provider record found, defaulting to step 2 for new user')
+          setCurrentStep(2)
+          // Also update localStorage
+          const currentStore = JSON.parse(localStorage.getItem('provider-registration') || '{}')
+          localStorage.setItem('provider-registration', JSON.stringify({
+            ...currentStore,
+            currentStep: 2
+          }))
         }
       } catch (error) {
         console.error('Error checking auth and progress:', error)
+        // On error, default to step 1
+        setCurrentStep(1)
       } finally {
         setIsLoading(false)
       }
     }
 
-    checkAuthAndProgress()
+    initializeAuthAndStep()
   }, [setUser, setCurrentStep])
 
   const renderCurrentStep = () => {
@@ -107,7 +139,7 @@ export default function ProviderRegistrationPage() {
             </Link>
             
             <div className="text-sm text-gray-500">
-              Paso {currentStep} de 4
+              {currentStep === 5 ? 'Registro Enviado' : `Paso ${currentStep} de 4`}
             </div>
           </div>
         </div>
