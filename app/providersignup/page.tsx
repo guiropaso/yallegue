@@ -36,7 +36,7 @@ export default function ProviderSignupPage() {
             {/* Background Image */}
             <div className="absolute inset-0">
               <Image
-                src="/images/services/mantenimiento.jpeg"
+                src="/images/providersignup.png"
                 alt="Profesionales trabajando"
                 fill
                 className="object-cover"
