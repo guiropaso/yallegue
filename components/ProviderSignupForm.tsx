@@ -61,7 +61,7 @@ function ProviderSignupForm() {
   }, [isDropdownOpen])
 
   const submitToWebhook = async (data: FormData) => {
-    const webhookUrl = 'https://yallegue.app.n8n.cloud/webhook/989d2ce0-8e56-4f38-b9a0-c38b9253db8c'
+    const webhookUrl = 'https://n8n.yalleguesv.com/webhook/989d2ce0-8e56-4f38-b9a0-c38b9253db8c'
     
     // Map years of experience number to its label
     // Convert string to number since form inputs return strings
