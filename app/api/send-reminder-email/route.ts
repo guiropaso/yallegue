@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get user emails from auth.users table
+    // Get user emails from auth.users table...
     const { data: users, error: usersError } = await supabase.auth.admin.listUsers();
     
     if (usersError) {
