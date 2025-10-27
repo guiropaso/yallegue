@@ -20,8 +20,11 @@ export interface Provider {
   whatsapp: string | null
   has_fixed_job: boolean | null
   registration_step: number | null
-  created_at: string
-  updated_at: string
+  first_reminder_email_sent: string | null
+  second_reminder_email_sent: string | null
+  created_at: string | null
+  updated_at: string | null
+  is_approved: boolean
 }
 
 export interface ProviderExperience {

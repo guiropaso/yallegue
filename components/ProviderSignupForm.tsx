@@ -99,13 +99,44 @@ function ProviderSignupForm() {
     }
   }
 
+  const sendWelcomeEmail = async (name: string, email: string) => {
+    try {
+      const response = await fetch('/api/send-welcome-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`Email API error! status: ${response.status}`)
+      }
+
+      const result = await response.json()
+      return result
+    } catch (error) {
+      console.error('Error sending welcome email:', error)
+      // Don't throw error here - email failure shouldn't break the form submission
+      return { error: 'Failed to send welcome email' }
+    }
+  }
+
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
     setSubmitStatus('idle')
     setErrorMessage('')
 
     try {
+      // First submit to webhook
       await submitToWebhook(data)
+      
+      // If webhook submission is successful, send welcome email
+      if (data.email) {
+        const fullName = `${data.firstName} ${data.lastName}`
+        await sendWelcomeEmail(fullName, data.email)
+      }
+      
       setSubmitStatus('success')
       reset()
       setSelectedAreas([])
@@ -416,6 +447,7 @@ function ProviderSignupForm() {
                   <p className="text-sm font-medium text-green-800">¡Aplicación enviada exitosamente!</p>
                 </div>
                 <p className="text-sm text-green-700 leading-relaxed">
+                  Hemos enviado un email de bienvenida a tu correo electrónico con los siguientes pasos. 
                   Nuestro equipo revisará tu información y te contactará por WhatsApp o correo. 
                   ¡Gracias por querer formar parte de nuestra comunidad de proveedores!
                 </p>
