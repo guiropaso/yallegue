@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -15,19 +15,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get user emails from auth.users table...
-    const { data: users, error: usersError } = await supabase.auth.admin.listUsers();
+    // Get user emails from auth.users table using admin client
+    console.log('Service role key available:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+    
+    const { data: users, error: usersError } = await supabaseAdmin.auth.admin.listUsers();
     
     if (usersError) {
       console.error('Error fetching users:', usersError);
       return NextResponse.json(
-        { error: 'Failed to fetch user data' },
+        { error: 'Failed to fetch user data', details: usersError.message },
         { status: 500 }
       );
     }
 
-    // Filter users by the provided IDs and extract emails
-    const userEmails = users.users
+    // Filter users with valid emails and matching IDs
+    const userEmails = (users?.users || [])
       .filter(user => ids.includes(user.id) && user.email)
       .map(user => ({
         id: user.id,
@@ -168,7 +170,7 @@ export async function POST(request: NextRequest) {
     // Update first_reminder_email_sent column for successfully sent emails
     if (successfulIds.length > 0) {
       try {
-        const { error: updateError } = await supabase
+        const { error: updateError } = await supabaseAdmin
           .from('providers')
           .update({ first_reminder_email_sent: new Date().toISOString() })
           .in('id', successfulIds);
@@ -191,7 +193,8 @@ export async function POST(request: NextRequest) {
         total: userEmails.length,
         successful: successfulIds.length,
         failed: userEmails.length - successfulIds.length
-      }
+      },
+      note: 'Using real auth.users data from Supabase'
     });
 
   } catch (error) {
