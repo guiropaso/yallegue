@@ -67,7 +67,7 @@ export function Footer() {
             <h4 className="text-lg font-semibold mb-4">Políticas</h4>
             <ul className="space-y-2 text-gray-300">
               <li><a href="#" className="hover:text-[#FF1B1C]">Términos y condiciones</a></li>
-              <li><a href="#" className="hover:text-[#FF1B1C]">Privacidad</a></li>
+              <li><a href="/privacidad" className="hover:text-[#FF1B1C]">Privacidad</a></li>
               <li><a href="#" className="hover:text-[#FF1B1C]">Política de cancelación</a></li>
               <li><a href="#" className="hover:text-[#FF1B1C]">Política de reembolso</a></li>
             </ul>
