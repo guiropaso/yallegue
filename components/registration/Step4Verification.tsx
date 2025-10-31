@@ -18,15 +18,10 @@ export default function Step4Verification() {
   }>({})
   
   const { user, documents, setDocuments, setLoading, setError: setStoreError, prevStep } = useProviderStore()
-  
-  // Debug existing documents
-  console.log('Current existing documents state:', existingDocuments)
-  
 
   useEffect(() => {
     // Load existing document data if available
     const loadExistingData = async () => {
-      console.log('Loading existing data for user:', user?.id)
       if (!user?.id) return
 
       try {
@@ -35,23 +30,19 @@ export default function Step4Verification() {
           .select('*')
           .eq('provider_id', user.id)
           .order('created_at', { ascending: false })
+          .maybeSingle() // Use maybeSingle() since we expect at most one row
 
-        console.log('Database query result:', { data, error })
+        if (error) {
+          console.error('Error loading existing documents:', error)
+          return
+        }
         
-        if (data && data.length > 0 && !error) {
-          const latestDocument = data[0]
-          console.log('Setting existing documents:', {
-            duiFront: latestDocument.dui_front_url,
-            duiBack: latestDocument.dui_back_url,
-            policeRecord: latestDocument.police_record_url
-          })
+        if (data) {
           setExistingDocuments({
-            duiFront: latestDocument.dui_front_url,
-            duiBack: latestDocument.dui_back_url,
-            policeRecord: latestDocument.police_record_url
+            duiFront: data.dui_front_url || undefined,
+            duiBack: data.dui_back_url || undefined,
+            policeRecord: data.police_record_url || undefined
           })
-        } else {
-          console.log('No existing documents found or error:', error)
         }
       } catch (err) {
         console.error('Error loading existing document data:', err)
@@ -89,24 +80,31 @@ export default function Step4Verification() {
 
     const path = `${user.id}/${type}/${Date.now()}-${file.name}`
     
+    let progressInterval: NodeJS.Timeout | null = null
+    
     try {
       setUploadProgress(prev => ({ ...prev, [type]: 0 }))
       
       // Simulate upload progress
-      const progressInterval = setInterval(() => {
+      progressInterval = setInterval(() => {
         setUploadProgress(prev => ({
           ...prev,
-          [type]: Math.min(prev[type] + 10, 90)
+          [type]: Math.min((prev[type] || 0) + 10, 90)
         }))
       }, 100)
 
       const url = await uploadFile(file, path)
       
-      clearInterval(progressInterval)
+      if (progressInterval) {
+        clearInterval(progressInterval)
+      }
       setUploadProgress(prev => ({ ...prev, [type]: 100 }))
       
       return url
     } catch (err) {
+      if (progressInterval) {
+        clearInterval(progressInterval)
+      }
       setUploadProgress(prev => ({ ...prev, [type]: 0 }))
       throw err
     }
@@ -144,15 +142,18 @@ export default function Step4Verification() {
         policeRecordUrl = await handleFileUpload('policeRecord', documents.policeRecord)
       }
 
-      // Save document URLs to database
+      // Save document URLs to database (ensure single row per provider)
       const { error } = await supabase
         .from('provider_documents')
-        .upsert({
-          provider_id: user.id,
-          dui_front_url: duiFrontUrl,
-          dui_back_url: duiBackUrl,
-          police_record_url: policeRecordUrl
-        })
+        .upsert(
+          {
+            provider_id: user.id,
+            dui_front_url: duiFrontUrl,
+            dui_back_url: duiBackUrl,
+            police_record_url: policeRecordUrl
+          },
+          { onConflict: 'provider_id' }
+        )
 
       if (error) {
         throw error
