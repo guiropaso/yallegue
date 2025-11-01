@@ -11,6 +11,10 @@ export default function Step4Verification() {
   const [error, setError] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({})
   const [isComplete, setIsComplete] = useState(false)
+  const [compressing, setCompressing] = useState<{ [key: string]: boolean }>({})
+  const [originalFileInfo, setOriginalFileInfo] = useState<{
+    [key: string]: { name: string; size: number }
+  }>({})
   const [existingDocuments, setExistingDocuments] = useState<{
     duiFront?: string
     duiBack?: string
@@ -18,10 +22,10 @@ export default function Step4Verification() {
   }>({})
   
   const { user, documents, setDocuments, setLoading, setError: setStoreError, prevStep } = useProviderStore()
-
+  
   useEffect(() => {
-    // Load existing document data if available
     const loadExistingData = async () => {
+      console.log('Loading existing data for user:', user?.id)
       if (!user?.id) return
 
       try {
@@ -30,18 +34,15 @@ export default function Step4Verification() {
           .select('*')
           .eq('provider_id', user.id)
           .order('created_at', { ascending: false })
-          .maybeSingle() // Use maybeSingle() since we expect at most one row
 
-        if (error) {
-          console.error('Error loading existing documents:', error)
-          return
-        }
+        console.log('Database query result:', { data, error })
         
-        if (data) {
+        if (data && data.length > 0 && !error) {
+          const latestDocument = data[0]
           setExistingDocuments({
-            duiFront: data.dui_front_url || undefined,
-            duiBack: data.dui_back_url || undefined,
-            policeRecord: data.police_record_url || undefined
+            duiFront: latestDocument.dui_front_url,
+            duiBack: latestDocument.dui_back_url,
+            policeRecord: latestDocument.police_record_url
           })
         }
       } catch (err) {
@@ -52,8 +53,229 @@ export default function Step4Verification() {
     loadExistingData()
   }, [user?.id])
 
-  const handleFileSelect = (type: keyof typeof documents, file: File | null) => {
-    setDocuments({ [type]: file })
+  const isImageFile = (file: File): boolean => {
+    return file.type.startsWith('image/') || 
+           file.name.toLowerCase().endsWith('.heic') ||
+           file.name.toLowerCase().endsWith('.heif')
+  }
+
+  const isPdfFile = (file: File): boolean => {
+    return file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
+  }
+
+  // Convert HEIC to JPEG
+  const convertHeicToJpeg = async (file: File): Promise<File> => {
+    try {
+      const heic2any = (await import('heic2any')).default
+      
+      console.log('Converting HEIC file:', file.name)
+      
+      const converted = await heic2any({
+        blob: file,
+        toType: 'image/jpeg',
+        quality: 0.9
+      })
+      
+      const convertedBlob = Array.isArray(converted) ? converted[0] : converted
+      
+      if (!(convertedBlob instanceof Blob)) {
+        throw new Error('HEIC conversion did not return a valid Blob')
+      }
+
+      const newFileName = file.name.replace(/\.(heic|heif)$/i, '.jpg')
+      const convertedFile = new File(
+        [convertedBlob], 
+        newFileName, 
+        {
+          type: 'image/jpeg',
+          lastModified: Date.now()
+        }
+      )
+      
+      console.log('HEIC converted successfully')
+      return convertedFile
+    } catch (err) {
+      console.error('Error converting HEIC to JPEG:', err)
+      throw new Error('No se pudo convertir el archivo HEIC. Por favor, usa un formato JPG o PNG.')
+    }
+  }
+
+  // Native browser-based image compression using Canvas API (Safari compatible)
+  const compressImage = async (file: File): Promise<File> => {
+    const maxSizeMB = 1
+    const maxWidthOrHeight = 1080
+    const quality = 0.8
+
+    try {
+      console.log('Starting native compression for:', file.name)
+
+      // Read file as data URL
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = (e) => resolve(e.target?.result as string)
+        reader.onerror = reject
+        reader.readAsDataURL(file)
+      })
+
+      // Create image element
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const image = new Image()
+        image.onload = () => resolve(image)
+        image.onerror = reject
+        image.src = dataUrl
+      })
+
+      // Calculate new dimensions
+      let width = img.width
+      let height = img.height
+
+      if (width > maxWidthOrHeight || height > maxWidthOrHeight) {
+        if (width > height) {
+          height = (height / width) * maxWidthOrHeight
+          width = maxWidthOrHeight
+        } else {
+          width = (width / height) * maxWidthOrHeight
+          height = maxWidthOrHeight
+        }
+      }
+
+      // Create canvas and compress
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+
+      const ctx = canvas.getContext('2d')
+      if (!ctx) {
+        throw new Error('No se pudo crear el contexto del canvas')
+      }
+
+      // Draw image on canvas
+      ctx.drawImage(img, 0, 0, width, height)
+
+      // Safari-compatible: Convert canvas to blob using toDataURL
+      const convertCanvasToBlob = async (currentQuality: number): Promise<Blob> => {
+        // Use toDataURL which has better Safari support
+        const dataURL = canvas.toDataURL('image/jpeg', currentQuality)
+        
+        // Convert data URL to blob
+        const base64 = dataURL.split(',')[1]
+        const binaryString = atob(base64)
+        const bytes = new Uint8Array(binaryString.length)
+        
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i)
+        }
+        
+        return new Blob([bytes], { type: 'image/jpeg' })
+      }
+
+      // Get initial blob
+      let finalBlob = await convertCanvasToBlob(quality)
+      let currentQuality = quality
+
+      // If still too large, reduce quality further
+      while (finalBlob.size > maxSizeMB * 1024 * 1024 && currentQuality > 0.3) {
+        currentQuality -= 0.1
+        finalBlob = await convertCanvasToBlob(currentQuality)
+      }
+
+      // Create new File from blob
+      const originalName = file.name.replace(/\.[^/.]+$/, '')
+      const compressedFile = new File(
+        [finalBlob],
+        `${originalName}.jpg`,
+        {
+          type: 'image/jpeg',
+          lastModified: Date.now()
+        }
+      )
+
+      console.log('Compression successful:', {
+        originalSize: file.size,
+        compressedSize: compressedFile.size,
+        reduction: ((1 - compressedFile.size / file.size) * 100).toFixed(1) + '%'
+      })
+
+      return compressedFile
+    } catch (err) {
+      console.error('Error compressing image:', err)
+      throw new Error('No se pudo comprimir la imagen. Por favor, intenta con otro archivo.')
+    }
+  }
+
+  const validatePdf = (file: File): void => {
+    const maxSizeMB = 10
+    const maxSizeBytes = maxSizeMB * 1024 * 1024
+
+    if (file.size > maxSizeBytes) {
+      throw new Error(`El archivo PDF es demasiado grande. Tamaño máximo: ${maxSizeMB}MB`)
+    }
+  }
+
+  const handleFileSelect = async (type: keyof typeof documents, file: File | null) => {
+    if (!file) {
+      setDocuments({ [type]: null })
+      setOriginalFileInfo(prev => {
+        const updated = { ...prev }
+        delete updated[type]
+        return updated
+      })
+      return
+    }
+
+    setCompressing(prev => ({ ...prev, [type]: true }))
+    setError(null)
+
+    try {
+      let processedFile: File = file
+      const originalName = file.name
+      const originalSize = file.size
+
+      console.log('Processing file:', { name: originalName, size: originalSize, type: file.type })
+
+      // Handle HEIC files
+      if (file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif')) {
+        console.log('HEIC file detected, converting...')
+        processedFile = await convertHeicToJpeg(file)
+        console.log('HEIC conversion complete')
+      }
+
+      // Process based on file type
+      if (isPdfFile(processedFile)) {
+        validatePdf(processedFile)
+        setOriginalFileInfo(prev => ({
+          ...prev,
+          [type]: { name: originalName, size: originalSize }
+        }))
+      } else if (isImageFile(processedFile)) {
+        console.log('Compressing image...')
+        const compressedFile = await compressImage(processedFile)
+        
+        // Store original info with the FINAL processed filename (not the input filename)
+        setOriginalFileInfo(prev => ({
+          ...prev,
+          [type]: { name: compressedFile.name, size: originalSize }
+        }))
+        
+        processedFile = compressedFile
+      } else {
+        throw new Error('Formato de archivo no soportado. Solo se permiten imágenes (JPG, PNG, HEIC) y PDFs.')
+      }
+
+      console.log('File processing complete')
+      setDocuments({ [type]: processedFile })
+    } catch (err: any) {
+      console.error('Error processing file:', err)
+      setError(err.message || 'Error al procesar el archivo. Por favor, intenta con otro archivo.')
+      setDocuments({ [type]: null })
+      setOriginalFileInfo(prev => {
+        const updated = { ...prev }
+        delete updated[type]
+        return updated
+      })
+    } finally {
+      setCompressing(prev => ({ ...prev, [type]: false }))
+    }
   }
 
   const uploadFile = async (file: File, path: string): Promise<string> => {
@@ -85,7 +307,6 @@ export default function Step4Verification() {
     try {
       setUploadProgress(prev => ({ ...prev, [type]: 0 }))
       
-      // Simulate upload progress
       progressInterval = setInterval(() => {
         setUploadProgress(prev => ({
           ...prev,
@@ -113,7 +334,6 @@ export default function Step4Verification() {
   const handleSubmit = async () => {
     if (!user?.id) return
 
-    // Check if we have either new files or existing documents
     const hasNewFiles = documents.duiFront || documents.duiBack || documents.policeRecord
     const hasExistingFiles = existingDocuments.duiFront || existingDocuments.duiBack || existingDocuments.policeRecord
     
@@ -131,7 +351,6 @@ export default function Step4Verification() {
       let duiBackUrl = existingDocuments.duiBack
       let policeRecordUrl = existingDocuments.policeRecord
 
-      // Upload new files if they exist
       if (documents.duiFront) {
         duiFrontUrl = await handleFileUpload('duiFront', documents.duiFront)
       }
@@ -142,24 +361,23 @@ export default function Step4Verification() {
         policeRecordUrl = await handleFileUpload('policeRecord', documents.policeRecord)
       }
 
-      // Save document URLs to database (ensure single row per provider)
+      // Save document URLs to database with onConflict
       const { error } = await supabase
         .from('provider_documents')
-        .upsert(
-          {
-            provider_id: user.id,
-            dui_front_url: duiFrontUrl,
-            dui_back_url: duiBackUrl,
-            police_record_url: policeRecordUrl
-          },
-          { onConflict: 'provider_id' }
-        )
+        .upsert({
+          provider_id: user.id,
+          dui_front_url: duiFrontUrl,
+          dui_back_url: duiBackUrl,
+          police_record_url: policeRecordUrl
+        }, {
+          onConflict: 'provider_id'
+        })
 
       if (error) {
+        console.error('Error upserting documents:', error)
         throw error
       }
 
-      // Update provider registration step to completed
       const { error: updateError } = await supabase
         .from('providers')
         .update({ registration_step: 5 })
@@ -200,6 +418,8 @@ export default function Step4Verification() {
   }) => {
     const file = documents[type]
     const progress = uploadProgress[type] || 0
+    const isCompressing = compressing[type] || false
+    const originalInfo = originalFileInfo[type]
     const inputRef = useRef<HTMLInputElement>(null)
     const existingUrl = existingDocuments[type as keyof typeof existingDocuments]
 
@@ -210,14 +430,35 @@ export default function Step4Verification() {
         </label>
         <p className="text-xs text-gray-500 mb-3">{description}</p>
         
-        {file ? (
+        {isCompressing ? (
+          <div className="border border-blue-200 rounded-xl p-4 bg-blue-50">
+            <div className="flex items-center gap-3">
+              <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
+              <div>
+                <p className="text-sm font-medium text-blue-900">Procesando archivo...</p>
+                <p className="text-xs text-blue-700">Por favor espera</p>
+              </div>
+            </div>
+          </div>
+        ) : file ? (
           <div className="border border-gray-200 rounded-xl p-4 bg-gray-50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <FileText className="w-5 h-5 text-gray-500" />
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{file.name}</p>
-                  <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {originalInfo?.name || file.name}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs text-gray-500">
+                      {formatFileSize(file.size)}
+                      {originalInfo && originalInfo.size !== file.size && (
+                        <span className="text-green-600 ml-1">
+                          (original: {formatFileSize(originalInfo.size)})
+                        </span>
+                      )}
+                    </p>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -278,7 +519,7 @@ export default function Step4Verification() {
           >
             <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
             <p className="text-sm text-gray-600 mb-1">Haz clic para subir archivo</p>
-            <p className="text-xs text-gray-500">PNG, JPG, PDF hasta 10MB</p>
+            <p className="text-xs text-gray-500">PNG, JPG, HEIC, PDF hasta 10MB</p>
           </div>
         )}
         
@@ -365,21 +606,21 @@ export default function Step4Verification() {
           type="duiFront"
           label="Foto del DUI (Frente)"
           description="Sube una foto clara del frente de tu DUI"
-          accept="image/*"
+          accept="image/*,.heic,.heif"
         />
 
         <FileUploadField
           type="duiBack"
           label="Foto del DUI (Reverso)"
           description="Sube una foto clara del reverso de tu DUI"
-          accept="image/*"
+          accept="image/*,.heic,.heif"
         />
 
         <FileUploadField
           type="policeRecord"
           label="Antecedentes Penales"
           description="Sube tu certificado de antecedentes penales (PDF o imagen)"
-          accept=".pdf,image/*"
+          accept=".pdf,image/*,.heic,.heif"
         />
       </div>
 
