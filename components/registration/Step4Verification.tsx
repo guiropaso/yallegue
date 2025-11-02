@@ -20,6 +20,9 @@ export default function Step4Verification() {
     duiBack?: string
     policeRecord?: string
   }>({})
+  const [signedUrls, setSignedUrls] = useState<{
+    [key: string]: string
+  }>({})
   
   const { user, documents, setDocuments, setLoading, setError: setStoreError, prevStep } = useProviderStore()
   
@@ -39,11 +42,38 @@ export default function Step4Verification() {
         
         if (data && data.length > 0 && !error) {
           const latestDocument = data[0]
-          setExistingDocuments({
-            duiFront: latestDocument.dui_front_url,
-            duiBack: latestDocument.dui_back_url,
-            policeRecord: latestDocument.police_record_url
-          })
+          const documents: { [key: string]: string } = {}
+          
+          // Store paths (these could be old URLs or new paths)
+          if (latestDocument.dui_front_url) documents.duiFront = latestDocument.dui_front_url
+          if (latestDocument.dui_back_url) documents.duiBack = latestDocument.dui_back_url
+          if (latestDocument.police_record_url) documents.policeRecord = latestDocument.police_record_url
+          
+          setExistingDocuments(documents)
+          
+          // Generate signed URLs for paths (not old public URLs)
+          const urlMap: { [key: string]: string } = {}
+          const expiry = 3600 // 1 hour
+          
+          for (const [type, pathOrUrl] of Object.entries(documents)) {
+            // Check if it's a path (starts with user.id/) or an old URL
+            // Paths look like: "user-id/duiFront/timestamp-filename.jpg"
+            // Old URLs look like: "https://..."
+            if (pathOrUrl && !pathOrUrl.startsWith('http')) {
+              const { data: signedUrlData } = await supabase.storage
+                .from('provider_documents')
+                .createSignedUrl(pathOrUrl, expiry)
+              
+              if (signedUrlData?.signedUrl) {
+                urlMap[type] = signedUrlData.signedUrl
+              }
+            } else if (pathOrUrl && pathOrUrl.startsWith('http')) {
+              // Keep old URLs as-is for backward compatibility
+              urlMap[type] = pathOrUrl
+            }
+          }
+          
+          setSignedUrls(urlMap)
         }
       } catch (err) {
         console.error('Error loading existing document data:', err)
@@ -290,11 +320,8 @@ export default function Step4Verification() {
       throw error
     }
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('provider_documents')
-      .getPublicUrl(data.path)
-
-    return publicUrl
+    // Return the path instead of public URL for private buckets
+    return data.path
   }
 
   const handleFileUpload = async (type: keyof typeof documents, file: File) => {
@@ -361,7 +388,8 @@ export default function Step4Verification() {
         policeRecordUrl = await handleFileUpload('policeRecord', documents.policeRecord)
       }
 
-      // Save document URLs to database with onConflict
+      // Save document paths to database with onConflict
+      // Note: column names still say "url" but we're storing paths now
       const { error } = await supabase
         .from('provider_documents')
         .upsert({
@@ -421,7 +449,44 @@ export default function Step4Verification() {
     const isCompressing = compressing[type] || false
     const originalInfo = originalFileInfo[type]
     const inputRef = useRef<HTMLInputElement>(null)
-    const existingUrl = existingDocuments[type as keyof typeof existingDocuments]
+    const existingPath = existingDocuments[type as keyof typeof existingDocuments]
+    const signedUrl = signedUrls[type]
+    
+    // Generate signed URL on demand when viewing
+    const handleViewFile = async (e: React.MouseEvent) => {
+      e.preventDefault()
+      
+      if (!existingPath) return
+      
+      // If it's an old URL, just open it
+      if (existingPath.startsWith('http')) {
+        window.open(existingPath, '_blank')
+        return
+      }
+      
+      // Use cached signed URL if available, otherwise generate a new one
+      if (signedUrl) {
+        window.open(signedUrl, '_blank')
+        return
+      }
+      
+      // Generate new signed URL
+      try {
+        const { data: signedUrlData, error } = await supabase.storage
+          .from('provider_documents')
+          .createSignedUrl(existingPath, 3600) // 1 hour expiry
+        
+        if (error) throw error
+        
+        if (signedUrlData?.signedUrl) {
+          setSignedUrls(prev => ({ ...prev, [type]: signedUrlData.signedUrl }))
+          window.open(signedUrlData.signedUrl, '_blank')
+        }
+      } catch (err) {
+        console.error('Error generating signed URL:', err)
+        setError('No se pudo generar el enlace para ver el archivo.')
+      }
+    }
 
     return (
       <div className="space-y-2">
@@ -483,7 +548,7 @@ export default function Step4Verification() {
               </div>
             )}
           </div>
-        ) : existingUrl ? (
+        ) : existingPath ? (
           <div className="border border-green-200 rounded-xl p-4 bg-green-50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -501,14 +566,14 @@ export default function Step4Verification() {
                 >
                   Reemplazar
                 </button>
-                <a
-                  href={existingUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
+                  onClick={handleViewFile}
                   className="p-1 hover:bg-green-200 rounded-full transition-colors"
+                  title="Ver documento"
                 >
                   <Eye className="w-4 h-4 text-green-600" />
-                </a>
+                </button>
               </div>
             </div>
           </div>
