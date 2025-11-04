@@ -10,7 +10,7 @@ interface FormData {
   lastName: string
   dui: string
   whatsapp: string
-  email?: string
+  email: string
   experienceAreas: string[]
   yearsExperience: number
   experienceDescription: string
@@ -19,12 +19,37 @@ interface FormData {
 
 const experienceOptions = [
   'Fontanería',
-  'Electricidad', 
-  'Reparación de Lavadoras',
+  'Electricidad',
   'Albañilería',
-  'Limpieza de Hogar',
-  'Planchado de prendas'
-]
+  'Instalador de tabla roca',
+  'Carpintería',
+  'Herrería / soldadura',
+  'Pintura de interiores y exteriores',
+  'Instalación de pisos y cerámica',
+  'Reparación de techos o goteras',
+  'Reparación / instalación de puertas y ventanas',
+  'Tapicería de muebles',
+  'Vidriería',
+  'Cerrajería',
+  'Jardinería',
+  'Fumigación y control de plagas',
+  'Mantenimiento de aires acondicionados',
+  'Reparación de refrigeradores',
+  'Reparación de lavadoras y secadoras',
+  'Reparación de microondas',
+  'Instalación de sistemas de seguridad',
+  'Mantenimiento de piscinas',
+  'Limpieza de cisternas',
+  'Limpieza de hogares y oficinas',
+  'Chef a domicilio',
+  'Manicure',
+  'Pedicure',
+  'Pestañas',
+  'Maquillista',
+  'Estilista',
+  'Otro, especifique'
+];
+
 
 const yearsOptions = [
   { value: 0, label: 'Menos de 1 año' },
@@ -159,14 +184,14 @@ function ProviderSignupForm() {
 
   const handleWhatsAppInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    // Allow only digits, plus sign, spaces, and hyphens
-    const filteredValue = value.replace(/[^0-9+\s-]/g, '')
+    // Allow only digits, limit to 8 characters
+    const filteredValue = value.replace(/[^0-9]/g, '').slice(0, 8)
     e.target.value = filteredValue
   }
 
   const handleDuiInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    // Allow only digits and limit to 9 characters
+    // Allow only digits and limit to 9 characters (preserve leading zeros)
     const filteredValue = value.replace(/[^0-9]/g, '').slice(0, 9)
     e.target.value = filteredValue
   }
@@ -234,7 +259,16 @@ function ProviderSignupForm() {
                 <div className="relative">
                   <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
-                    {...register('dui', { required: 'El DUI es requerido' })}
+                    {...register('dui', { 
+                      required: 'El DUI es requerido',
+                      validate: (value) => {
+                        const digitsOnly = value.replace(/[^0-9]/g, '')
+                        if (digitsOnly.length !== 9) {
+                          return 'El DUI debe tener exactamente 9 dígitos'
+                        }
+                        return true
+                      }
+                    })}
                     type="text"
                     id="dui"
                     onInput={handleDuiInput}
@@ -255,12 +289,22 @@ function ProviderSignupForm() {
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
-                    {...register('whatsapp', { required: 'El número de WhatsApp es requerido' })}
+                    {...register('whatsapp', { 
+                      required: 'El número de WhatsApp es requerido',
+                      validate: (value) => {
+                        const digitsOnly = value.replace(/[^0-9]/g, '')
+                        if (digitsOnly.length !== 8) {
+                          return 'El número de WhatsApp debe tener exactamente 8 dígitos'
+                        }
+                        return true
+                      }
+                    })}
                     type="text"
                     id="whatsapp"
                     onInput={handleWhatsAppInput}
+                    maxLength={8}
                     className="w-full pl-10 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#FF1B1C] focus:border-transparent focus:bg-white focus-visible:ring-0 transition-all duration-200"
-                    placeholder="+503 0000-0000"
+                    placeholder="00000000"
                   />
                 </div>
                 {errors.whatsapp && (
@@ -272,18 +316,27 @@ function ProviderSignupForm() {
             {/* Email Field - Row 3 */}
             <div className="space-y-2">
               <label htmlFor="email" className="block text-xs font-medium text-gray-700">
-                Email (opcional)
+                Email *
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
-                  {...register('email')}
+                  {...register('email', { 
+                    required: 'El email es requerido',
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: 'Email inválido'
+                    }
+                  })}
                   type="email"
                   id="email"
                   className="w-full pl-10 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#FF1B1C] focus:border-transparent focus:bg-white focus-visible:ring-0 transition-all duration-200"
                   placeholder="tu@email.com"
                 />
               </div>
+              {errors.email && (
+                <p className="text-sm text-red-600">{errors.email.message}</p>
+              )}
             </div>
           </div>
 
@@ -448,7 +501,6 @@ function ProviderSignupForm() {
                 </div>
                 <p className="text-sm text-green-700 leading-relaxed">
                   Hemos enviado un email de bienvenida a tu correo electrónico con los siguientes pasos. 
-                  Nuestro equipo revisará tu información y te contactará por WhatsApp o correo. 
                   ¡Gracias por querer formar parte de nuestra comunidad de proveedores!
                 </p>
               </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { supabase } from '@/lib/supabase'
 import { useProviderStore } from '@/lib/store'
@@ -8,12 +8,37 @@ import { Briefcase, Calendar, MessageSquare, Loader2, AlertCircle, Plus, X } fro
 
 const experienceOptions = [
   'Fontanería',
-  'Electricidad', 
-  'Reparación de Lavadoras',
+  'Electricidad',
   'Albañilería',
-  'Limpieza de Hogar',
-  'Planchado de prendas'
-]
+  'Instalador de tabla roca',
+  'Carpintería',
+  'Herrería / soldadura',
+  'Pintura de interiores y exteriores',
+  'Instalación de pisos y cerámica',
+  'Reparación de techos o goteras',
+  'Reparación / instalación de puertas y ventanas',
+  'Tapicería de muebles',
+  'Vidriería',
+  'Cerrajería',
+  'Jardinería',
+  'Fumigación y control de plagas',
+  'Mantenimiento de aires acondicionados',
+  'Reparación de refrigeradores',
+  'Reparación de lavadoras y secadoras',
+  'Reparación de microondas',
+  'Instalación de sistemas de seguridad',
+  'Mantenimiento de piscinas',
+  'Limpieza de cisternas',
+  'Limpieza de hogares y oficinas',
+  'Chef a domicilio',
+  'Manicure',
+  'Pedicure',
+  'Pestañas',
+  'Maquillista',
+  'Estilista',
+  'Otro, especifique'
+];
+
 
 const yearsOptions = [
   { value: 0, label: 'Menos de 1 año' },
@@ -27,6 +52,7 @@ export default function Step3Experience() {
   const [error, setError] = useState<string | null>(null)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const { user, experience, setExperience, setLoading, setError: setStoreError, nextStep, prevStep } = useProviderStore()
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     // Load existing experience data if available
@@ -56,6 +82,23 @@ export default function Step3Experience() {
 
     loadExistingData()
   }, [user?.id, setExperience])
+
+  // Handle clicking outside the dropdown to close it
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false)
+      }
+    }
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isDropdownOpen])
 
   const toggleArea = (area: string) => {
     const newAreas = experience.areas.includes(area)
@@ -148,7 +191,7 @@ export default function Step3Experience() {
           <label className="block text-sm font-medium text-gray-700">
             Áreas de experiencia *
           </label>
-          <div className="relative">
+          <div className="relative" ref={dropdownRef}>
             <button
               type="button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}

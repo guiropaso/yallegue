@@ -11,43 +11,49 @@ export default function EmailPreviewPage() {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Bienvenido a Ya Llegué</title>
+      <title>Perfil Aprobado - Ya Llegué</title>
     </head>
     <body style="margin: 0; padding: 20px; background-color: #FF1B1C; font-family: Arial, sans-serif;">
       <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
         <!-- Main Content -->
         <tr>
           <td style="padding: 40px 30px; text-align: center;">
-            <!-- Welcome Icon -->
-            <div style="width: 80px; height: 80px; background-color: #FFA500; border-radius: 50%; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center; font-size: 40px;">
-              🚀
-            </div>
-            
             <!-- Title -->
             <h1 style="font-size: 28px; font-weight: bold; color: #333333; margin: 0 0 20px 0; line-height: 1.2;">
-              ¡Hola ${name}! 👋<br>¡Bienvenido a Ya Llegué!
+              🎉 ¡Tu perfil ha sido aprobado!
             </h1>
             
             <!-- Message -->
-            <p style="font-size: 16px; color: #666666; line-height: 1.6; margin: 0 0 30px 0;">
-              Dónde podrás generar dinero extra con tu oficio.<br><br>
-              Hemos recibido tu registro, para continuar con tu aprobación en la plataforma ayúdanos llenando el siguiente formulario:
+            <p style="font-size: 16px; color: #666666; line-height: 1.6; margin: 0 0 20px 0; text-align: left;">
+              Hola ${name},
             </p>
             
-            <!-- CTA Button -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 20px 0;">
-              <tr>
-                <td align="center">
-                  <a href="https://yalleguesv.com/providers/register" style="display: inline-block; background-color: #FF1B1C; color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: bold; font-size: 18px;">
-                    Completar Registro
-                  </a>
-                </td>
-              </tr>
-            </table>
+            <p style="font-size: 16px; color: #666666; line-height: 1.6; margin: 0 0 20px 0; text-align: left;">
+              ¡Buenas noticias! 🎉
+            </p>
             
-            <!-- Highlighted Text -->
-            <p style="font-size: 16px; color: #FF1B1C; line-height: 1.6; margin: 20px 0 0 0; font-weight: bold;">
-              Este llenado es vital para empezar a trabajar con Ya Llegué!
+            <p style="font-size: 16px; color: #666666; line-height: 1.6; margin: 0 0 20px 0; text-align: left;">
+              Tu perfil ha sido <strong>aprobado exitosamente</strong>.
+            </p>
+            
+            <p style="font-size: 16px; color: #666666; line-height: 1.6; margin: 0 0 20px 0; text-align: left;">
+              Muy pronto, cuando la plataforma esté activa, podrás comenzar a <strong>ofrecer tus servicios</strong> y <strong>generar ingresos extra</strong> conectando con clientes que necesitan justo lo que tú sabes hacer.
+            </p>
+            
+            <p style="font-size: 16px; color: #666666; line-height: 1.6; margin: 0 0 20px 0; text-align: left;">
+              Queremos agradecerte por confiar en nosotros y por formar parte de esta comunidad de profesionales que hacen la diferencia.
+            </p>
+            
+            <p style="font-size: 16px; color: #666666; line-height: 1.6; margin: 0 0 20px 0; text-align: left;">
+              Te avisaremos en cuanto la plataforma esté disponible para que puedas completar los últimos pasos y empezar a recibir solicitudes de trabajo.
+            </p>
+            
+            <p style="font-size: 16px; color: #666666; line-height: 1.6; margin: 0 0 30px 0; text-align: left;">
+              Un saludo,
+            </p>
+            
+            <p style="font-size: 16px; color: #333333; line-height: 1.6; margin: 0 0 0 0; text-align: left; font-weight: bold;">
+              El equipo de Ya Llegué!
             </p>
           </td>
         </tr>
@@ -56,16 +62,14 @@ export default function EmailPreviewPage() {
         <tr>
           <td style="background-color: #F8F8F8; padding: 30px; text-align: center; border-top: 1px solid #E5E5E5;">
             <p style="font-size: 14px; color: #666666; line-height: 1.5; margin: 0 0 15px 0;">
-              Copyright ©2025 Ya Llegué El Salvador<br>
-              Ya Llegué es operado por profesionales salvadoreños comprometidos con el desarrollo local.
+              Ya Llegué! El Salvador<br>
+              Ya Llegué! es operado por profesionales salvadoreños comprometidos con el desarrollo local.
             </p>
             <p style="font-size: 14px; color: #666666; line-height: 1.5; margin: 0 0 15px 0;">
-              Estás recibiendo este email porque te registraste en nuestro sitio web. 
-              Puedes darte de baja enviando un email a 
+              Este es un email transaccional, no es necesario responder.
+              Si necesitas ayuda, contacta a nuestro equipo de soporte a través de:
               <a href="mailto:info@yalleguesv.com" style="color: #FF1B1C; text-decoration: underline;">info@yalleguesv.com</a>
-            </p>
-            <p style="font-size: 14px; color: #666666; line-height: 1.5; margin: 0;">
-              <a href="#" style="color: #FF1B1C; text-decoration: underline;">Nuestra Política de Privacidad</a>
+              o a nuestro número de WhatsApp: <a href="https://wa.me/50361780439" style="color: #FF1B1C; text-decoration: underline;">+503 6178-0439</a>
             </p>
           </td>
         </tr>

@@ -57,9 +57,7 @@ export async function POST(request: NextRequest) {
           <tr>
             <td style="padding: 40px 30px; text-align: center;">
               <!-- Reminder Icon -->
-              <div style="width: 80px; height: 80px; background-color: #FFA500; border-radius: 50%; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center; font-size: 40px;">
-                😥
-              </div>
+              
               
               <!-- Title -->
               <h1 style="font-size: 28px; font-weight: bold; color: #333333; margin: 0 0 20px 0; line-height: 1.2;">
@@ -73,7 +71,7 @@ export async function POST(request: NextRequest) {
               
               <!-- Highlighted Text -->
               <p style="font-size: 18px; color: #FF1B1C; line-height: 1.6; margin: 0 0 30px 0; font-weight: bold;">
-                🔶El llenado de este formulario es vital para que empieces a generar dinero con Ya Llegué!
+                El llenado de este formulario es vital para que empieces a generar dinero con Ya Llegué!
               </p>
               
               <!-- CTA Button -->
@@ -89,23 +87,22 @@ export async function POST(request: NextRequest) {
             </td>
           </tr>
           
-          <!-- Footer -->
-          <tr>
-            <td style="background-color: #F8F8F8; padding: 30px; text-align: center; border-top: 1px solid #E5E5E5;">
-              <p style="font-size: 14px; color: #666666; line-height: 1.5; margin: 0 0 15px 0;">
-                Copyright ©2025 Ya Llegué El Salvador<br>
-                Ya Llegué es operado por profesionales salvadoreños comprometidos con el desarrollo local.
-              </p>
-              <p style="font-size: 14px; color: #666666; line-height: 1.5; margin: 0 0 15px 0;">
-                Estás recibiendo este email porque te registraste en nuestro sitio web. 
-                Puedes darte de baja enviando un email a 
-                <a href="mailto:info@yalleguesv.com" style="color: #FF1B1C; text-decoration: underline;">info@yalleguesv.com</a>
-              </p>
-              <p style="font-size: 14px; color: #666666; line-height: 1.5; margin: 0;">
-                <a href="#" style="color: #FF1B1C; text-decoration: underline;">Nuestra Política de Privacidad</a>
-              </p>
-            </td>
-          </tr>
+         <!-- Footer -->
+        <tr>
+          <td style="background-color: #F8F8F8; padding: 30px; text-align: center; border-top: 1px solid #E5E5E5;">
+            <p style="font-size: 14px; color: #666666; line-height: 1.5; margin: 0 0 15px 0;">
+              Ya Llegué! El Salvador<br>
+              Ya Llegué! es operado por profesionales salvadoreños comprometidos con el desarrollo local.
+            </p>
+            <p style="font-size: 14px; color: #666666; line-height: 1.5; margin: 0 0 15px 0;">
+              Este es un email transaccional, no es necesario responder.
+              Si necesitas ayuda, contacta a nuestro equipo de soporte a través de:
+              <a href="mailto:info@yalleguesv.com" style="color: #FF1B1C; text-decoration: underline;">info@yalleguesv.com</a>
+              o a nuestro número de WhatsApp: <a href="https://wa.me/50361780439" style="color: #FF1B1C; text-decoration: underline;">+503 6178-0439</a>
+            </p>
+            
+          </td>
+        </tr>
         </table>
       </body>
       </html>

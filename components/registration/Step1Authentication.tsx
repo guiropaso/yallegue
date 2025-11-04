@@ -148,7 +148,7 @@ export default function Step1Authentication() {
               <p className="text-sm font-medium text-green-800">Próximos pasos</p>
             </div>
             <ul className="text-sm text-green-700 space-y-1">
-              <li>• Revisaremos tu información en 24-48 horas</li>
+              <li>• Revisaremos tu información</li>
               <li>• Te contactaremos por WhatsApp para verificación</li>
               <li>• Una vez aprobado, podrás recibir solicitudes de servicios</li>
             </ul>

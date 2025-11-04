@@ -145,32 +145,32 @@ export default function ProviderRegistrationPage() {
         </div>
 
         {/* Progress Bar */}
-        <div className="px-6 py-4 bg-gray-50">
-          <div className="flex items-center justify-between">
+        <div className="px-3 sm:px-6 py-4 bg-gray-50">
+          <div className="flex items-center justify-between gap-1 sm:gap-2">
             {steps.map((step, index) => (
-              <div key={step.id} className="flex items-center">
-                <div className="flex items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+              <div key={step.id} className="flex items-center flex-1 min-w-0">
+                <div className="flex items-center w-full">
+                  <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full mx-auto flex items-center justify-center text-xs sm:text-sm font-medium flex-shrink-0 ${
                     currentStep > step.id 
                       ? 'bg-green-500 text-white' 
                       : currentStep === step.id 
                         ? 'bg-[#FF1B1C] text-white' 
                         : 'bg-gray-300 text-gray-600'
                   }`} style={{ borderRadius: '50%' }}>
-                    {currentStep > step.id ? <Check className="w-4 h-4" /> : step.id}
+                    {currentStep > step.id ? <Check className="w-3 h-3 sm:w-4 sm:h-4" /> : step.id}
                   </div>
-                  <div className="ml-3 hidden sm:block">
-                    <p className={`text-sm font-medium ${
+                  <div className="ml-2 sm:ml-3 min-w-0 hidden sm:block">
+                    <p className={`text-xs sm:text-sm font-medium truncate ${
                       currentStep >= step.id ? 'text-gray-900' : 'text-gray-500'
                     }`}>
                       {step.title}
                     </p>
-                    <p className="text-xs text-gray-500">{step.description}</p>
+                    <p className="text-xs text-gray-500 truncate">{step.description}</p>
                   </div>
                 </div>
                 
                 {index < steps.length - 1 && (
-                  <div className={`w-12 h-0.5 mx-4 ${
+                  <div className={`flex-1 h-0.5 mx-1 sm:mx-4 flex-shrink-0 ${
                     currentStep > step.id ? 'bg-green-500' : 'bg-gray-300'
                   }`} />
                 )}
@@ -186,12 +186,12 @@ export default function ProviderRegistrationPage() {
 
         {/* Footer */}
         <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
-          <div className="flex items-center justify-between text-sm text-gray-500">
+          <div className="flex md:flex-row flex-col items-center justify-between text-sm text-gray-500">
             <p>
-              ¿Necesitas ayuda? <a href="mailto:hola@yallegue.com" className="text-[#FF1B1C] hover:underline">hola@yallegue.com</a>
+              ¿Necesitas ayuda? <a href="mailto:info@yalleguesv.com" className="text-[#FF1B1C] hover:underline">info@yalleguesv.com</a>
             </p>
-            <p>
-              Al continuar, aceptas nuestros términos de servicio
+            <p className="text-center md:text-left">
+              O escribe a nuestro número de WhatsApp: <a href="https://wa.me/50361780439" className="text-[#FF1B1C] hover:underline">6178-0439</a>
             </p>
           </div>
         </div>

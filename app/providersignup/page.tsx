@@ -127,7 +127,7 @@ export default function ProviderSignupPage() {
             {/* Footer */}
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-500">
-                ¿Prefieres email? <a href="mailto:hola@yallegue.com" className="text-[#FF1B1C] hover:underline">hola@yallegue.com</a>
+                ¿Tienes alguna pregunta? <a href="mailto:info@yalleguesv.com" className="text-[#FF1B1C] hover:underline">info@yalleguesv.com</a>
               </p>
             </div>
           </div>

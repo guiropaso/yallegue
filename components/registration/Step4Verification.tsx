@@ -626,7 +626,7 @@ export default function Step4Verification() {
             <p className="text-sm font-medium text-green-800">Próximos pasos</p>
           </div>
           <ul className="text-sm text-green-700 space-y-1">
-            <li>• Revisaremos tu información en 24-48 horas</li>
+            <li>• Revisaremos tu información </li>
             <li>• Te contactaremos por WhatsApp para verificación</li>
             <li>• Una vez aprobado, podrás recibir solicitudes de servicios</li>
           </ul>
@@ -691,7 +691,7 @@ export default function Step4Verification() {
 
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
         <div className="flex items-start gap-3">
-          <Shield className="w-5 h-5 text-blue-600 mt-0.5" />
+          <Shield className="w-5 h-5 text-blue-600 mt-0.5 hidden md:block" />
           <div>
             <p className="text-sm font-medium text-blue-800 mb-1">Información de seguridad</p>
             <p className="text-xs text-blue-700">
