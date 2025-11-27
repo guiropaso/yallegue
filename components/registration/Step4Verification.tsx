@@ -415,6 +415,30 @@ export default function Step4Verification() {
         throw updateError
       }
 
+      // Send completion email to the user
+      if (user.email) {
+        try {
+          const storeState = useProviderStore.getState()
+          const userName = storeState.personalInfo?.firstName && storeState.personalInfo?.lastName
+            ? `${storeState.personalInfo.firstName} ${storeState.personalInfo.lastName}`
+            : user.name || 'Usuario'
+          
+          await fetch('/api/send-application-complete-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: userName,
+              email: user.email,
+            }),
+          })
+        } catch (emailError) {
+          console.error('Error sending completion email:', emailError)
+          // Don't fail the registration if email fails
+        }
+      }
+
       setIsComplete(true)
     } catch (err: any) {
       console.error('Error uploading documents:', err)

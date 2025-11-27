@@ -1,0 +1,109 @@
+'use client'
+
+import { useState } from 'react'
+
+export default function ApplicationCompleteEmailPreviewPage() {
+  const [name, setName] = useState('Juan Pérez')
+
+  const emailHtml = `
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Solicitud Completada - Ya Llegué</title>
+    </head>
+    <body style="margin: 0; padding: 20px; background-color: #FF1B1C; font-family: Arial, sans-serif;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+        <!-- Main Content -->
+        <tr>
+          <td style="padding: 40px 30px; text-align: center;">
+            <!-- Title -->
+            <h1 style="font-size: 28px; font-weight: bold; color: #333333; margin: 0 0 20px 0; line-height: 1.2;">
+              ¡Gracias por completar tu solicitud! 🎉
+            </h1>
+            
+            <!-- Message -->
+            <p style="font-size: 16px; color: #666666; line-height: 1.6; margin: 0 0 20px 0; text-align: left;">
+              Hola ${name},
+            </p>
+            
+            <p style="font-size: 16px; color: #666666; line-height: 1.6; margin: 0 0 20px 0; text-align: left;">
+              Queremos agradecerte por completar tu solicitud de registro como proveedor en Ya Llegué. Hemos recibido todos tus documentos y tu información ha sido registrada exitosamente.
+            </p>
+            
+            <p style="font-size: 16px; color: #666666; line-height: 1.6; margin: 0 0 20px 0; text-align: left;">
+              Nuestro equipo está revisando tu solicitud y documentos. Te contactaremos pronto con más información sobre el estado de tu aprobación y próximos pasos.
+            </p>
+            
+            <!-- Highlighted Text -->
+            <p style="font-size: 18px; color: #FF1B1C; line-height: 1.6; margin: 0 0 30px 0; font-weight: bold; text-align: center;">
+              Por favor, espera nuestra notificación de aprobación.
+            </p>
+            
+            <p style="font-size: 16px; color: #666666; line-height: 1.6; margin: 0 0 20px 0; text-align: left;">
+              Mientras tanto, si tienes alguna pregunta o necesitas ayuda, no dudes en contactarnos.
+            </p>
+            
+            <p style="font-size: 16px; color: #666666; line-height: 1.6; margin: 0 0 30px 0; text-align: left;">
+              Un saludo,
+            </p>
+            
+            <p style="font-size: 16px; color: #333333; line-height: 1.6; margin: 0 0 0 0; text-align: left; font-weight: bold;">
+              El equipo de Ya Llegué!
+            </p>
+          </td>
+        </tr>
+        
+        <!-- Footer -->
+        <tr>
+          <td style="background-color: #F8F8F8; padding: 30px; text-align: center; border-top: 1px solid #E5E5E5;">
+            <p style="font-size: 14px; color: #666666; line-height: 1.5; margin: 0 0 15px 0;">
+              Ya Llegué! El Salvador<br>
+              Ya Llegué! es operado por profesionales salvadoreños comprometidos con el desarrollo local.
+            </p>
+            <p style="font-size: 14px; color: #666666; line-height: 1.5; margin: 0 0 15px 0;">
+              Este es un email transaccional, no es necesario responder.
+              Si necesitas ayuda, contacta a nuestro equipo de soporte a través de:
+              <a href="mailto:info@yalleguesv.com" style="color: #FF1B1C; text-decoration: underline;">info@yalleguesv.com</a>
+              o a nuestro número de WhatsApp: <a href="https://wa.me/50361780439" style="color: #FF1B1C; text-decoration: underline;">+503 6178-0439</a>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Email Preview - Solicitud Completada</h1>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Test Name:
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+              placeholder="Enter test name"
+            />
+          </div>
+          <p className="text-sm text-gray-600">
+            This shows exactly how the email will look when sent to users after they complete step 4.
+          </p>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div 
+            dangerouslySetInnerHTML={{ __html: emailHtml }}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
