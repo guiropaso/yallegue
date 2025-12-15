@@ -122,7 +122,7 @@ export function Header() {
 
           {/* Desktop CTA Button - Right side */}
           <div className="hidden lg:flex">
-            <Link href="/providersignup">
+            <Link href="/providers/register">
               <Button 
                 className="bg-gradient-to-r from-[#FF1B1C] via-[#FF4444] to-[#FF6B6B] hover:from-[#FF1B1C]/90 hover:via-[#FF4444]/90 hover:to-[#FF6B6B]/90 text-white rounded-full px-6 py-2 text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
@@ -168,7 +168,7 @@ export function Header() {
                 </button>
               ))}
               <div className="pt-3">
-                <Link href="/providersignup" onClick={closeMobileMenu}>
+                <Link href="/providers/register" onClick={closeMobileMenu}>
                   <Button 
                     className="w-full bg-gradient-to-r from-[#FF1B1C] via-[#FF4444] to-[#FF6B6B] hover:from-[#FF1B1C]/90 hover:via-[#FF4444]/90 hover:to-[#FF6B6B]/90 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   >

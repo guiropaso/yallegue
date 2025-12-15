@@ -1,12 +1,14 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { supabase } from '@/lib/supabase'
 import { useProviderStore } from '@/lib/store'
 import { Upload, FileText, Shield, Loader2, AlertCircle, CheckCircle, X, Eye } from 'lucide-react'
 
 export default function Step4Verification() {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({})
@@ -439,7 +441,8 @@ export default function Step4Verification() {
         }
       }
 
-      setIsComplete(true)
+      // Redirect to thank you page instead of showing completion message
+      router.push('/providers/register/thank-you')
     } catch (err: any) {
       console.error('Error uploading documents:', err)
       setError('Error al subir los documentos. Por favor, inténtalo de nuevo.')
