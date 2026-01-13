@@ -86,7 +86,7 @@ function ProviderSignupForm() {
   }, [isDropdownOpen])
 
   const submitToWebhook = async (data: FormData) => {
-    const webhookUrl = 'https://n8n.yalleguesv.com/webhook/989d2ce0-8e56-4f38-b9a0-c38b9253db8c'
+    const webhookUrl = 'https://ya-llegue-n8n.oja7g3.easypanel.host/webhook/8810e597-9bd0-47cf-976f-eee80af8493c'
     
     // Map years of experience number to its label
     // Convert string to number since form inputs return strings
