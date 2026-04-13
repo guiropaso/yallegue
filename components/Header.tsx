@@ -92,13 +92,13 @@ export function Header() {
         }}
       >
         {/* Header Content */}
-        <div className="flex items-center justify-between py-4 px-10">
+        <div className="flex items-center py-4 px-8">
           {/* Logo - Left side */}
           <div className="flex-shrink-0">
             <Link href="/">
-              <Image 
-                src="/images/logos/logo.png" 
-                alt="Ya Llegué Logo" 
+              <Image
+                src="/images/logos/logo.png"
+                alt="Ya Llegué Logo"
                 width={140}
                 height={56}
                 priority
@@ -107,24 +107,31 @@ export function Header() {
             </Link>
           </div>
 
-          {/* Desktop Navigation - Centered */}
-          <nav className="hidden lg:flex space-x-7">
+          {/* Desktop Navigation - Truly centered */}
+          <nav className="hidden lg:flex flex-1 justify-center gap-6">
             {navigationItems.slice(1).map((item) => (
               <button
                 key={item.name}
                 onClick={() => handleSmoothScroll(item.href)}
-                className="text-gray-700 hover:text-[#FF1B1C] transition-colors duration-200 text-sm font-medium"
+                className="text-gray-700 hover:text-[#FF1B1C] transition-colors duration-200 text-sm font-medium whitespace-nowrap"
               >
                 {item.name}
               </button>
             ))}
           </nav>
 
-          {/* Desktop CTA Button - Right side */}
-          <div className="hidden lg:flex">
+          {/* Desktop CTA Buttons - Right side */}
+          <div className="hidden lg:flex flex-shrink-0 items-center gap-2 ml-4">
+            <Link href="/waitlist">
+              <Button
+                className="bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white rounded-full px-5 py-2 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 whitespace-nowrap"
+              >
+                Quiero un servicio ¡YA!
+              </Button>
+            </Link>
             <Link href="/providers/register">
-              <Button 
-                className="bg-gradient-to-r from-[#FF1B1C] via-[#FF4444] to-[#FF6B6B] hover:from-[#FF1B1C]/90 hover:via-[#FF4444]/90 hover:to-[#FF6B6B]/90 text-white rounded-full px-6 py-2 text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              <Button
+                className="bg-gradient-to-r from-[#FF1B1C] via-[#FF4444] to-[#FF6B6B] hover:from-[#FF1B1C]/90 hover:via-[#FF4444]/90 hover:to-[#FF6B6B]/90 text-white rounded-full px-5 py-2 text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 whitespace-nowrap"
               >
                 Quiero ser un proveedor
               </Button>
@@ -132,7 +139,7 @@ export function Header() {
           </div>
 
           {/* Mobile menu button */}
-          <div className="lg:hidden">
+          <div className="lg:hidden ml-auto">
             <button
               onClick={toggleMobileMenu}
               className="text-gray-700 hover:text-[#FF1B1C] transition-colors duration-200 relative"
@@ -167,9 +174,16 @@ export function Header() {
                   {item.name}
                 </button>
               ))}
-              <div className="pt-3">
+              <div className="pt-3 flex flex-col gap-2">
+                <Link href="/waitlist" onClick={closeMobileMenu}>
+                  <Button
+                    className="w-full bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold"
+                  >
+                    Quiero un servicio ¡YA!
+                  </Button>
+                </Link>
                 <Link href="/providers/register" onClick={closeMobileMenu}>
-                  <Button 
+                  <Button
                     className="w-full bg-gradient-to-r from-[#FF1B1C] via-[#FF4444] to-[#FF6B6B] hover:from-[#FF1B1C]/90 hover:via-[#FF4444]/90 hover:to-[#FF6B6B]/90 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   >
                     Quiero ser un proveedor
