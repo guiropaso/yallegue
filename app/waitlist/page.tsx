@@ -53,6 +53,11 @@ const steps = [
   },
 ]
 
+/* ─── Shared inner-container class ─────────────────────────────────────── */
+// Padding lives here — never on the <section> — so overflow-hidden on parents
+// cannot eat the right-hand side on any device.
+const container = 'w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8'
+
 /* ─── Page component ────────────────────────────────────────────────────── */
 
 export default function WaitlistPage() {
@@ -118,13 +123,13 @@ export default function WaitlistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
+    <div className="min-h-screen bg-white">
       <Header />
 
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 1 — HERO
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative pt-28 md:pt-44 pb-16 md:pb-28 px-4 overflow-hidden">
+      <section className="relative pt-28 md:pt-44 pb-16 md:pb-28 overflow-hidden">
         {/* Background blobs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-32 w-[540px] h-[540px] bg-gradient-to-br from-[#FF1B1C]/12 to-transparent rounded-full blur-3xl animate-pulse" />
@@ -134,7 +139,7 @@ export default function WaitlistPage() {
           />
         </div>
 
-        <div className="relative max-w-6xl mx-auto">
+        <div className={`relative ${container}`}>
           <div className="grid lg:grid-cols-2 gap-14 items-center">
 
             {/* ── Left copy ── */}
@@ -154,7 +159,6 @@ export default function WaitlistPage() {
                 donde contratas
               </h1>
 
-              {/* Service tags — now with "y más" */}
               <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase mb-6">
                 Jardineros · Albañiles · Electricistas · Fontaneros · Servicios de Belleza · y más
               </p>
@@ -175,19 +179,13 @@ export default function WaitlistPage() {
 
             {/* ── Right: $5 OFF creative voucher ── */}
             <div className="hidden lg:flex items-center justify-center">
-              {/* Outer glow ring */}
               <div className="relative">
                 <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-[#FF1B1C] to-[#FF6B6B] blur-2xl opacity-30 scale-110 animate-pulse" />
 
-                {/* Voucher card */}
                 <div className="relative bg-gradient-to-br from-[#FF1B1C] via-[#FF2D2D] to-[#c0392b] rounded-[2.5rem] p-10 w-[380px] shadow-2xl overflow-hidden">
-
-                  {/* Decorative circles */}
                   <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full" />
                   <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-white/10 rounded-full" />
-                  <div className="absolute top-1/2 -right-4 w-16 h-16 bg-white/8 rounded-full" />
 
-                  {/* Top label */}
                   <div className="flex flex-col items-center gap-3 mb-6 relative z-10">
                     <Image
                       src="/images/logos/logo.png"
@@ -205,10 +203,8 @@ export default function WaitlistPage() {
                     </div>
                   </div>
 
-                  {/* Dashed divider */}
                   <div className="border-t border-dashed border-white/30 mb-6 relative z-10" />
 
-                  {/* Big $5 */}
                   <div className="relative z-10 text-center mb-1">
                     <span className="text-[8rem] font-black text-white leading-none block" style={{ textShadow: '0 4px 24px rgba(0,0,0,0.2)' }}>
                       $5
@@ -220,19 +216,16 @@ export default function WaitlistPage() {
                     </div>
                   </div>
 
-                  {/* Subtitle */}
                   <p className="text-white/90 text-center text-sm font-medium mt-3 mb-6 relative z-10">
                     en tu <strong className="text-white">primer servicio</strong>
                   </p>
 
-                  {/* Dashed divider with circle notches */}
                   <div className="relative flex items-center my-6 z-10">
                     <div className="absolute -left-10 w-5 h-5 bg-white/20 rounded-full" />
                     <div className="flex-1 border-t border-dashed border-white/30" />
                     <div className="absolute -right-10 w-5 h-5 bg-white/20 rounded-full" />
                   </div>
 
-                  {/* Redemption note */}
                   <div className="relative z-10 bg-white/15 rounded-2xl px-5 py-4 text-center">
                     <p className="text-white text-sm leading-relaxed">
                       Únete a la lista de espera y tu descuento<br />
@@ -240,10 +233,8 @@ export default function WaitlistPage() {
                       Sin tarjeta. Sin compromisos.
                     </p>
                   </div>
-
                 </div>
 
-                {/* Floating badge top-right */}
                 <div className="absolute -top-5 -right-5 w-24 h-24 bg-white rounded-full flex flex-col items-center justify-center shadow-xl border-4 border-[#FF1B1C]/20 z-20 text-center px-2">
                   <span className="text-[#FF1B1C] font-black text-sm leading-tight">¡Solicítalo</span>
                   <span className="text-[#FF1B1C] font-black text-sm leading-tight">YA!</span>
@@ -258,8 +249,8 @@ export default function WaitlistPage() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 2 — "En Ya Llegué Podrás Contratar"
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="bg-[#FF1B1C] py-20 px-4">
-        <div className="max-w-6xl mx-auto">
+      <section className="bg-[#FF1B1C] py-20">
+        <div className={container}>
           <h2 className="text-4xl md:text-5xl font-black text-white text-center mb-14 leading-tight">
             En Ya Llegué! Podrás Contratar
           </h2>
@@ -276,9 +267,7 @@ export default function WaitlistPage() {
                   fill
                   className={`object-cover ${s.position} group-hover:scale-110 transition-transform duration-500`}
                 />
-                {/* Dark gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-                {/* Label */}
                 <div className="absolute bottom-0 left-0 right-0 p-4">
                   <p className="text-white font-bold text-sm uppercase tracking-wide">
                     {s.label}
@@ -293,8 +282,8 @@ export default function WaitlistPage() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 3 — "Conectamos proveedores" + How it works
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 px-4 bg-white">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-24 bg-white">
+        <div className={container}>
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left */}
             <div>
@@ -350,10 +339,10 @@ export default function WaitlistPage() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 4 — "¿Se te dañó el chorro?" callout
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden">
+      <section className="relative">
         <div className="grid lg:grid-cols-2 min-h-[480px]">
-          {/* Left: copy */}
-          <div className="bg-white px-6 py-16 md:px-10 md:py-20 flex flex-col justify-center">
+          {/* Left: copy — padding handled inline so it's always present */}
+          <div className="bg-white flex flex-col justify-center px-4 sm:px-6 lg:px-16 py-16">
             <p className="text-2xl text-gray-600 mb-2 font-medium">¿Se te dañó el chorro?</p>
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 leading-tight mb-8">
               Contrata a quien lo repare en{' '}
@@ -370,8 +359,8 @@ export default function WaitlistPage() {
             </button>
           </div>
 
-          {/* Right: full image */}
-          <div className="relative min-h-[480px]">
+          {/* Right: full-bleed image */}
+          <div className="relative min-h-[320px] lg:min-h-[480px]">
             <Image
               src="/images/services/todos.png"
               alt="Proveedores de servicios"
@@ -386,13 +375,13 @@ export default function WaitlistPage() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 5 — $5 OFF + FORM
       ═══════════════════════════════════════════════════════════════ */}
-      <section ref={formRef} className="relative py-24 px-4 overflow-hidden bg-gray-50">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <section ref={formRef} className="relative py-24 bg-gray-50 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute -top-32 -right-32 w-[480px] h-[480px] bg-gradient-to-br from-[#FF1B1C]/8 to-transparent rounded-full blur-3xl" />
           <div className="absolute -bottom-32 -left-32 w-[480px] h-[480px] bg-gradient-to-tr from-[#FF4444]/6 to-transparent rounded-full blur-3xl" />
         </div>
 
-        <div className="relative max-w-6xl mx-auto">
+        <div className={`relative ${container}`}>
           <div className="grid lg:grid-cols-2 gap-16 items-center">
 
             {/* Left: $5 OFF copy */}
@@ -496,7 +485,7 @@ export default function WaitlistPage() {
                         <label className="block text-sm font-medium text-gray-700 mb-1.5">
                           Número de teléfono
                         </label>
-                        <div className="flex rounded-xl border border-gray-200 focus-within:border-[#FF1B1C] focus-within:ring-2 focus-within:ring-[#FF1B1C]/15 overflow-hidden transition-all duration-200 bg-white disabled:bg-gray-50">
+                        <div className="flex rounded-xl border border-gray-200 focus-within:border-[#FF1B1C] focus-within:ring-2 focus-within:ring-[#FF1B1C]/15 overflow-hidden transition-all duration-200 bg-white">
                           <div className="flex items-center px-4 bg-gray-50 border-r border-gray-200 flex-shrink-0">
                             <span className="text-gray-600 font-semibold text-sm select-none">+503</span>
                           </div>
@@ -607,8 +596,8 @@ export default function WaitlistPage() {
       </section>
 
       {/* ── Footer ─────────────────────────────────────────────────────── */}
-      <footer className="bg-gray-900 text-white py-10 px-4 text-center">
-        <div className="max-w-5xl mx-auto">
+      <footer className="bg-gray-900 text-white py-10 text-center">
+        <div className={container}>
           <Image
             src="/images/logos/logo.png"
             alt="Ya Llegué"
