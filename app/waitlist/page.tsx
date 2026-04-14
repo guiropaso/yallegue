@@ -354,15 +354,16 @@ export default function WaitlistPage() {
             </button>
           </div>
 
-          {/* Right: full-bleed image */}
-          <div className="relative min-h-[280px] sm:min-h-[320px] lg:min-h-[480px]">
-            <Image
-              src="/images/services/todos.png"
-              alt="Proveedores de servicios"
-              fill
-              className="object-cover object-top"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-white/30 to-transparent lg:from-transparent" />
+          {/* Right: image */}
+          <div className="relative min-h-[280px] sm:min-h-[320px] lg:min-h-[480px] px-6 py-6 sm:px-8 sm:py-8 lg:p-0">
+            <div className="relative w-full h-full min-h-[inherit] rounded-2xl lg:rounded-none overflow-hidden">
+              <Image
+                src="/images/services/todos.png"
+                alt="Proveedores de servicios"
+                fill
+                className="object-cover object-top"
+              />
+            </div>
           </div>
         </div>
       </section>

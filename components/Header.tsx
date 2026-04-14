@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -21,23 +22,41 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
   const headerRef = useRef<HTMLDivElement>(null)
+  const pathname = usePathname()
+  const router = useRouter()
 
-  const handleSmoothScroll = (href: string) => {
-    const element = document.querySelector(href)
+  const scrollToHash = (hash: string) => {
+    const element = document.querySelector(hash)
     if (element) {
       const headerHeight = headerRef.current?.offsetHeight || (window.innerWidth < 1024 ? 80 : 100)
       const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
-      // Keep desktop behavior as original, optimize mobile only
       const extraSpacing = window.innerWidth < 1024 ? -430 : 40
       const offsetPosition = elementPosition - headerHeight - extraSpacing
-      
+
       window.scrollTo({
         top: offsetPosition,
         behavior: 'smooth'
       })
     }
+  }
+
+  const handleSmoothScroll = (href: string) => {
+    if (pathname !== '/') {
+      // Navigate to homepage with hash — scroll after load
+      router.push('/' + href)
+    } else {
+      scrollToHash(href)
+    }
     closeMobileMenu()
   }
+
+  // On mount, if URL has a hash (coming from another page), scroll to it
+  useEffect(() => {
+    if (pathname === '/' && window.location.hash) {
+      // Small delay so the DOM is ready
+      setTimeout(() => scrollToHash(window.location.hash), 100)
+    }
+  }, [pathname])
 
   const closeMobileMenu = () => {
     setIsAnimating(true)
