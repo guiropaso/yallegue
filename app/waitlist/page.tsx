@@ -355,13 +355,13 @@ export default function WaitlistPage() {
           </div>
 
           {/* Right: image */}
-          <div className="relative min-h-[280px] sm:min-h-[320px] lg:min-h-[480px] px-6 py-6 sm:px-8 sm:py-8 lg:p-0">
-            <div className="relative w-full h-full min-h-[inherit] rounded-2xl lg:rounded-none overflow-hidden">
+          <div className="relative lg:min-h-[480px]">
+            <div className="relative w-full h-[300px] sm:h-[360px] lg:h-full lg:min-h-[inherit]">
               <Image
                 src="/images/services/todos.png"
                 alt="Proveedores de servicios"
                 fill
-                className="object-cover object-top"
+                className="object-contain lg:object-cover object-top"
               />
             </div>
           </div>
