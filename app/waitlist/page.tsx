@@ -53,11 +53,6 @@ const steps = [
   },
 ]
 
-/* ─── Shared inner-container class ─────────────────────────────────────── */
-// Padding lives here — never on the <section> — so overflow-hidden on parents
-// cannot eat the right-hand side on any device.
-const container = 'w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8'
-
 /* ─── Page component ────────────────────────────────────────────────────── */
 
 export default function WaitlistPage() {
@@ -123,14 +118,14 @@ export default function WaitlistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <Header />
 
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 1 — HERO
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative pt-28 md:pt-44 pb-16 md:pb-28 overflow-hidden">
-        {/* Background blobs */}
+      <section className="relative pt-28 md:pt-44 pb-16 md:pb-28">
+        {/* Background blobs — overflow confined to this wrapper only */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-32 w-[540px] h-[540px] bg-gradient-to-br from-[#FF1B1C]/12 to-transparent rounded-full blur-3xl animate-pulse" />
           <div
@@ -139,11 +134,11 @@ export default function WaitlistPage() {
           />
         </div>
 
-        <div className={`relative ${container}`}>
+        <div className="relative mx-auto max-w-6xl px-5 sm:px-8">
           <div className="grid lg:grid-cols-2 gap-14 items-center">
 
             {/* ── Left copy ── */}
-            <div>
+            <div className="min-w-0">
               <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 rounded-full px-5 py-2 mb-8">
                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse block" />
                 <span className="text-sm font-semibold text-green-700">
@@ -151,7 +146,7 @@ export default function WaitlistPage() {
                 </span>
               </div>
 
-              <h1 className="text-5xl md:text-6xl font-black text-gray-900 leading-tight mb-4">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 leading-tight mb-4 break-words">
                 Ya Llegué!{' '}
                 <span className="block bg-gradient-to-r from-[#FF1B1C] via-[#FF4444] to-[#FF6B6B] bg-clip-text text-transparent">
                   La plataforma
@@ -159,20 +154,20 @@ export default function WaitlistPage() {
                 donde contratas
               </h1>
 
-              <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase mb-6">
-                Jardineros · Albañiles · Electricistas · Fontaneros · Servicios de Belleza · y más
+              <p className="text-xs sm:text-sm font-semibold tracking-widest text-gray-400 uppercase mb-6 break-words">
+                Jardineros · Albañiles · Electricistas · Fontaneros · Belleza · y más
               </p>
 
-              <p className="text-lg text-gray-600 mb-10 leading-relaxed max-w-lg">
+              <p className="text-base sm:text-lg text-gray-600 mb-10 leading-relaxed max-w-lg">
                 Conectamos clientes con proveedores verificados para cualquier servicio en tu
                 hogar. Rápido, seguro y sin complicaciones.
               </p>
 
               <button
                 onClick={scrollToForm}
-                className="inline-flex items-center gap-3 bg-gradient-to-r from-[#FF1B1C] via-[#FF4444] to-[#FF6B6B] text-white font-bold px-8 py-4 rounded-full shadow-xl shadow-[#FF1B1C]/25 hover:shadow-[#FF1B1C]/40 hover:scale-105 transition-all duration-300 text-base"
+                className="inline-flex items-center gap-3 bg-gradient-to-r from-[#FF1B1C] via-[#FF4444] to-[#FF6B6B] text-white font-bold px-6 sm:px-8 py-4 rounded-full shadow-xl shadow-[#FF1B1C]/25 hover:shadow-[#FF1B1C]/40 hover:scale-105 transition-all duration-300 text-sm sm:text-base"
               >
-                Únete a la lista de espera y obtén $5 OFF
+                Únete y obtén $5 OFF
                 <ArrowDown className="w-5 h-5 animate-bounce" />
               </button>
             </div>
@@ -250,12 +245,12 @@ export default function WaitlistPage() {
           SECTION 2 — "En Ya Llegué Podrás Contratar"
       ═══════════════════════════════════════════════════════════════ */}
       <section className="bg-[#FF1B1C] py-20">
-        <div className={container}>
-          <h2 className="text-4xl md:text-5xl font-black text-white text-center mb-14 leading-tight">
+        <div className="mx-auto max-w-6xl px-5 sm:px-8">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white text-center mb-14 leading-tight">
             En Ya Llegué! Podrás Contratar
           </h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5">
             {services.map((s) => (
               <div
                 key={s.label}
@@ -268,8 +263,8 @@ export default function WaitlistPage() {
                   className={`object-cover ${s.position} group-hover:scale-110 transition-transform duration-500`}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-4">
-                  <p className="text-white font-bold text-sm uppercase tracking-wide">
+                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
+                  <p className="text-white font-bold text-xs sm:text-sm uppercase tracking-wide">
                     {s.label}
                   </p>
                 </div>
@@ -282,12 +277,12 @@ export default function WaitlistPage() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 3 — "Conectamos proveedores" + How it works
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 bg-white">
-        <div className={container}>
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <section className="py-16 sm:py-24 bg-white">
+        <div className="mx-auto max-w-6xl px-5 sm:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left */}
-            <div>
-              <h2 className="text-5xl md:text-6xl font-black text-gray-900 leading-tight mb-8">
+            <div className="min-w-0">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 leading-tight mb-8 break-words">
                 Conectamos{' '}
                 <span className="relative inline-block">
                   <span className="bg-gradient-to-r from-[#FF1B1C] to-[#FF6B6B] bg-clip-text text-transparent">
@@ -308,22 +303,22 @@ export default function WaitlistPage() {
                 onClick={scrollToForm}
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF1B1C] to-[#FF4444] text-white font-semibold px-7 py-3.5 rounded-full shadow-lg shadow-[#FF1B1C]/25 hover:shadow-[#FF1B1C]/40 hover:scale-105 transition-all duration-300 text-sm"
               >
-                Únete a la lista de espera y obtén $5 OFF
+                Únete y obtén $5 OFF
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
 
             {/* Right: steps */}
-            <div className="space-y-6">
+            <div className="space-y-5 sm:space-y-6 min-w-0">
               {steps.map((step) => (
                 <div
                   key={step.number}
-                  className="flex gap-5 p-5 rounded-2xl bg-gray-50 hover:bg-red-50/40 transition-colors duration-300 border border-transparent hover:border-red-100"
+                  className="flex gap-4 sm:gap-5 p-4 sm:p-5 rounded-2xl bg-gray-50 hover:bg-red-50/40 transition-colors duration-300 border border-transparent hover:border-red-100"
                 >
                   <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-[#FF1B1C] to-[#FF6B6B] rounded-full flex items-center justify-center shadow-md shadow-[#FF1B1C]/20">
                     <span className="text-white font-bold text-sm">{step.number}</span>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <h3 className="font-bold text-[#FF1B1C] mb-1 text-sm uppercase tracking-wide">
                       {step.title}
                     </h3>
@@ -339,12 +334,12 @@ export default function WaitlistPage() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 4 — "¿Se te dañó el chorro?" callout
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative">
-        <div className="grid lg:grid-cols-2 min-h-[480px]">
-          {/* Left: copy — padding handled inline so it's always present */}
-          <div className="bg-white flex flex-col justify-center px-4 sm:px-6 lg:px-16 py-16">
-            <p className="text-2xl text-gray-600 mb-2 font-medium">¿Se te dañó el chorro?</p>
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 leading-tight mb-8">
+      <section>
+        <div className="grid lg:grid-cols-2 min-h-[400px] lg:min-h-[480px]">
+          {/* Left: copy */}
+          <div className="bg-white flex flex-col justify-center px-5 sm:px-8 lg:px-16 py-12 sm:py-16">
+            <p className="text-xl sm:text-2xl text-gray-600 mb-2 font-medium">¿Se te dañó el chorro?</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-tight mb-8 break-words">
               Contrata a quien lo repare en{' '}
               <span className="bg-gradient-to-r from-[#FF1B1C] to-[#FF6B6B] bg-clip-text text-transparent">
                 Ya Llegué!
@@ -354,13 +349,13 @@ export default function WaitlistPage() {
               onClick={scrollToForm}
               className="self-start inline-flex items-center gap-2 bg-gradient-to-r from-[#FF1B1C] to-[#FF4444] text-white font-semibold px-7 py-3.5 rounded-full shadow-lg shadow-[#FF1B1C]/25 hover:shadow-[#FF1B1C]/40 hover:scale-105 transition-all duration-300 text-sm"
             >
-              Únete a la lista de espera y obtén $5 OFF
+              Únete y obtén $5 OFF
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
 
           {/* Right: full-bleed image */}
-          <div className="relative min-h-[320px] lg:min-h-[480px]">
+          <div className="relative min-h-[280px] sm:min-h-[320px] lg:min-h-[480px]">
             <Image
               src="/images/services/todos.png"
               alt="Proveedores de servicios"
@@ -375,22 +370,23 @@ export default function WaitlistPage() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 5 — $5 OFF + FORM
       ═══════════════════════════════════════════════════════════════ */}
-      <section ref={formRef} className="relative py-24 bg-gray-50 overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <section ref={formRef} className="relative py-16 sm:py-24 bg-gray-50">
+        {/* Background blobs — overflow confined to this wrapper only */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-32 -right-32 w-[480px] h-[480px] bg-gradient-to-br from-[#FF1B1C]/8 to-transparent rounded-full blur-3xl" />
           <div className="absolute -bottom-32 -left-32 w-[480px] h-[480px] bg-gradient-to-tr from-[#FF4444]/6 to-transparent rounded-full blur-3xl" />
         </div>
 
-        <div className={`relative ${container}`}>
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="relative mx-auto max-w-6xl px-5 sm:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
             {/* Left: $5 OFF copy */}
-            <div>
+            <div className="min-w-0">
               <div className="mb-4">
-                <span className="text-[7rem] md:text-[9rem] font-black leading-none bg-gradient-to-br from-[#FF1B1C] via-[#FF4444] to-[#FF6B6B] bg-clip-text text-transparent block">
+                <span className="text-[5rem] sm:text-[7rem] md:text-[9rem] font-black leading-none bg-gradient-to-br from-[#FF1B1C] via-[#FF4444] to-[#FF6B6B] bg-clip-text text-transparent block">
                   $5
                 </span>
-                <h2 className="text-4xl md:text-5xl font-black text-gray-900 leading-tight -mt-3">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-tight -mt-2 sm:-mt-3 break-words">
                   OFF en tu{' '}
                   <span className="bg-gradient-to-r from-[#FF1B1C] to-[#FF6B6B] bg-clip-text text-transparent">
                     primer servicio
@@ -398,7 +394,7 @@ export default function WaitlistPage() {
                 </h2>
               </div>
 
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+              <p className="text-base sm:text-lg text-gray-600 mb-8 leading-relaxed">
                 ¿Has necesitado una reparación, pero no sabes dónde contratar a alguien?{' '}
                 <strong className="text-gray-900">Ya Llegué!</strong> resuelve eso. Únete a la lista
                 de espera y recibe $5 de descuento en tu primer servicio al lanzamiento.
@@ -421,7 +417,7 @@ export default function WaitlistPage() {
             </div>
 
             {/* Right: form */}
-            <div>
+            <div className="min-w-0">
               {!isSuccess ? (
                 <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
                   <div className="h-1.5 bg-gradient-to-r from-[#FF1B1C] via-[#FF4444] to-[#FF6B6B]" />
@@ -447,7 +443,7 @@ export default function WaitlistPage() {
                             onChange={(e) => setName(e.target.value)}
                             placeholder="Tu nombre"
                             disabled={isLoading}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#FF1B1C] focus:ring-2 focus:ring-[#FF1B1C]/15 outline-none transition-all duration-200 text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
+                            className="w-full px-3 sm:px-4 py-3 rounded-xl border border-gray-200 focus:border-[#FF1B1C] focus:ring-2 focus:ring-[#FF1B1C]/15 outline-none transition-all duration-200 text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed text-sm sm:text-base"
                           />
                         </div>
                         <div>
@@ -460,7 +456,7 @@ export default function WaitlistPage() {
                             onChange={(e) => setLastName(e.target.value)}
                             placeholder="Tu apellido"
                             disabled={isLoading}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#FF1B1C] focus:ring-2 focus:ring-[#FF1B1C]/15 outline-none transition-all duration-200 text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
+                            className="w-full px-3 sm:px-4 py-3 rounded-xl border border-gray-200 focus:border-[#FF1B1C] focus:ring-2 focus:ring-[#FF1B1C]/15 outline-none transition-all duration-200 text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed text-sm sm:text-base"
                           />
                         </div>
                       </div>
@@ -476,7 +472,7 @@ export default function WaitlistPage() {
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="tu@correo.com"
                           disabled={isLoading}
-                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#FF1B1C] focus:ring-2 focus:ring-[#FF1B1C]/15 outline-none transition-all duration-200 text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
+                          className="w-full px-3 sm:px-4 py-3 rounded-xl border border-gray-200 focus:border-[#FF1B1C] focus:ring-2 focus:ring-[#FF1B1C]/15 outline-none transition-all duration-200 text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
                         />
                       </div>
 
@@ -485,8 +481,8 @@ export default function WaitlistPage() {
                         <label className="block text-sm font-medium text-gray-700 mb-1.5">
                           Número de teléfono
                         </label>
-                        <div className="flex rounded-xl border border-gray-200 focus-within:border-[#FF1B1C] focus-within:ring-2 focus-within:ring-[#FF1B1C]/15 overflow-hidden transition-all duration-200 bg-white">
-                          <div className="flex items-center px-4 bg-gray-50 border-r border-gray-200 flex-shrink-0">
+                        <div className="flex rounded-xl border border-gray-200 focus-within:border-[#FF1B1C] focus-within:ring-2 focus-within:ring-[#FF1B1C]/15 transition-all duration-200 bg-white">
+                          <div className="flex items-center px-3 sm:px-4 bg-gray-50 border-r border-gray-200 flex-shrink-0">
                             <span className="text-gray-600 font-semibold text-sm select-none">+503</span>
                           </div>
                           <input
@@ -496,9 +492,9 @@ export default function WaitlistPage() {
                             placeholder="0000 0000"
                             maxLength={8}
                             disabled={isLoading}
-                            className="flex-1 px-4 py-3 outline-none text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed bg-transparent"
+                            className="flex-1 min-w-0 px-3 sm:px-4 py-3 outline-none text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed bg-transparent"
                           />
-                          <div className="flex items-center pr-4">
+                          <div className="flex items-center pr-3 sm:pr-4">
                             <span className={`text-xs font-medium tabular-nums ${phone.length === 8 ? 'text-green-500' : 'text-gray-400'}`}>
                               {phone.length}/8
                             </span>
@@ -516,7 +512,7 @@ export default function WaitlistPage() {
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
                             disabled={isLoading}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#FF1B1C] focus:ring-2 focus:ring-[#FF1B1C]/15 outline-none transition-all duration-200 text-gray-900 appearance-none bg-white disabled:bg-gray-50 disabled:cursor-not-allowed cursor-pointer"
+                            className="w-full px-3 sm:px-4 py-3 rounded-xl border border-gray-200 focus:border-[#FF1B1C] focus:ring-2 focus:ring-[#FF1B1C]/15 outline-none transition-all duration-200 text-gray-900 appearance-none bg-white disabled:bg-gray-50 disabled:cursor-not-allowed cursor-pointer"
                           >
                             <option value="" disabled>
                               Selecciona una categoría...
@@ -527,7 +523,7 @@ export default function WaitlistPage() {
                               </option>
                             ))}
                           </select>
-                          <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+                          <div className="pointer-events-none absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-gray-400">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
@@ -569,7 +565,7 @@ export default function WaitlistPage() {
                 /* Success state */
                 <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden text-center">
                   <div className="h-1.5 bg-gradient-to-r from-green-500 to-emerald-400" />
-                  <div className="p-10">
+                  <div className="p-8 sm:p-10">
                     <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                       <CheckCircle className="w-10 h-10 text-green-600" />
                     </div>
@@ -597,7 +593,7 @@ export default function WaitlistPage() {
 
       {/* ── Footer ─────────────────────────────────────────────────────── */}
       <footer className="bg-gray-900 text-white py-10 text-center">
-        <div className={container}>
+        <div className="mx-auto max-w-5xl px-5 sm:px-8">
           <Image
             src="/images/logos/logo.png"
             alt="Ya Llegué"
